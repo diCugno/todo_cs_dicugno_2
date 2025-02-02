@@ -4,7 +4,9 @@ const insertButton = document.getElementById("inserisci");
 
 let todos = [];
 
-const rowTemplate = '<tr id="%ID"><td>%NOME</td><td><button class= "button" type="button" id="completato_%ID">%TEST</button></td><td><button class= "button" type="button" id="delete_%ID">Elimina</button></td></tr>'
+const template = '<tr id="%ID"><td>%NOME</td><td><button class= "button" type="button" id="completato_%ID">%TEST</button></td><td><button class= "button" type="button" id="delete_%ID">Elimina</button></td></tr>'
+
+
 
 const send = (todo) => {
    return new Promise((resolve, reject) => {
@@ -13,14 +15,18 @@ const send = (todo) => {
          headers: {
             "Content-Type": "application/json"
          },
-         body: JSON.stringify(todo)
+         body: JSON.stringify({ todo: todo })
       })
       .then((response) => response.json())
       .then((json) => {
-         resolve(json); // risposta del server all'aggiunta
+         resolve(json);
       })
    })
 }
+
+
+
+
 
 const load = () => {
    return new Promise((resolve, reject) => {
@@ -29,6 +35,9 @@ const load = () => {
       .then(data => resolve(data));
    })
 }
+
+
+
 
 const completeTodo = (todo) => {
    return new Promise((resolve, reject) => {
@@ -46,6 +55,9 @@ const completeTodo = (todo) => {
    })
 }
 
+
+
+
 const deleteTodo = (id) => {
    return new Promise((resolve, reject) => {
       fetch("/todo/"+ id , {
@@ -59,13 +71,13 @@ const deleteTodo = (id) => {
    })
 }
 
+
+
 const render = () => {
    let newHtml = "<thead><td><h2>ToDo</h2></td></thead>";
    
    todos.forEach((e) => {
-      let row = rowTemplate
-         .replace("%ID", e.id)
-         .replace("%ID", e.id)
+      let row = template
          .replace("%ID", e.id)
          .replace("%NOME", e.name)
          .replace("%TEST", e.done ? "Completato" : "Completa");
@@ -102,13 +114,15 @@ const render = () => {
 };
 
 
+
 insertButton.onclick = () => {
    const todo = {          
       name: todoInput.value,
-      completed: false
-   }  
-   send(todo) // 1. invia la nuova Todo
-    .then(() => load()) // 2. caricala nuova lista
+      done: false
+   }
+   console.log("todo   ", todo)
+   send(todo)  // 1. invia la nuova Todo
+    .then(() => load()) // 2. carica la nuova lista
     .then((json) => { 
       todos = json.todos;
       todoInput.value = "";
@@ -124,7 +138,6 @@ load().then((json) => {
 setInterval(() => {
    load().then((json) => {
       todos = json.todos;
-      todoInput.value = "";
       render();
    });
 }, 30000);
