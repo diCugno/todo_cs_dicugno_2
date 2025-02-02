@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const path = require("path");
 
-const PORT = 5500;
+const PORT = 80;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -54,5 +54,4 @@ app.delete("/todo/:id", (req, res) => {
     res.json({ result: "Ok" });
 });
 
-// Avvio del server sulla porta 5500
 app.listen(PORT, () => console.log(`Server in esecuzione su http://localhost:${PORT}`));

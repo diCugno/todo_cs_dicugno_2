@@ -60,7 +60,7 @@ const deleteTodo = (id) => {
 }
 
 const render = () => {
-   let newHtml = "<thead><td><h2>Nome Attivita</h2></td></thead>";
+   let newHtml = "<thead><td><h2>ToDo</h2></td></thead>";
    
    todos.forEach((e) => {
       let row = rowTemplate
