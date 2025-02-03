@@ -26,8 +26,6 @@ const send = (todo) => {
 
 
 
-
-
 const load = () => {
    return new Promise((resolve, reject) => {
       fetch("/todo")
@@ -35,8 +33,6 @@ const load = () => {
       .then(data => resolve(data));
    })
 }
-
-
 
 
 const completeTodo = (todo) => {
@@ -74,35 +70,41 @@ const deleteTodo = (id) => {
 
 
 const render = () => {
-   let newHtml = "<thead><td><h2>ToDo</h2></td></thead>";
+   let newHtml = "<thead><tr><th>ToDo</th><th>Stato</th><th>Azioni</th></tr></thead><tbody>";
    
    todos.forEach((e) => {
+      console.log("e   ", e);
+
       let row = template
-         .replace("%ID", e.id)
-         .replace("%NOME", e.name)
+         .replace(/%ID/g, e.id) //globale
+         .replace("%NOME", e.text.name)
          .replace("%TEST", e.done ? "Completato" : "Completa");
 
       newHtml += row;
    });
+
+   newHtml += "</tbody>";
    table.innerHTML = newHtml;
 
-   const buttons = document.querySelectorAll(".button");
-
-   buttons.forEach((button) => {
-      if (button.id.includes("completato")) {
+   // Aggiunta degli event listener ai pulsanti completato ed elimina
+   document.querySelectorAll(".button").forEach((button) => {
+      if (button.id.indexOf("completato_") !== -1) {
+         const todoId = button.id.replace("completato_", "");
          button.onclick = () => {
-            const todo = todos.find((e) => e.id === button.id.replace("completato_", ""));
-            completeTodo(todo)
-               .then(() => load())
-               .then(data => {
-                  todos = data.todos;
-                  render();
-               });
+            const todo = todos.find((e) => e.id === todoId);
+            if (todo) {
+               completeTodo(todo)
+                  .then(() => load())
+                  .then(data => {
+                     todos = data.todos;
+                     render();
+                  });
+            }
          };
-      }
-      else if (button.id.includes("delete")) {
+      } else if (button.id.indexOf("delete_") !== -1) {
+         const todoId = button.id.replace("delete_", "");
          button.onclick = () => {
-            deleteTodo(button.id.replace("delete_", ""))
+            deleteTodo(todoId)
                .then(() => load())
                .then(data => {
                   todos = data.todos;
@@ -112,6 +114,7 @@ const render = () => {
       }
    });
 };
+
 
 
 
